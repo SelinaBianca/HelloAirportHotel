@@ -83,15 +83,29 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outl
 .thanks{margin:0 -78px;padding:26px 78px 30px;text-align:center;border-top:4px solid var(--brand)}
 .thanks h4{font-weight:700;font-size:18px;letter-spacing:.03em;color:var(--brand)}
 .thanks p{font-weight:600;font-size:14.5px;margin-top:16px;color:var(--accent)}
+.invoice.dense .items{margin-top:28px}
+.invoice.dense .items th{padding:13px 14px}
+.invoice.dense .items td{height:46px;padding:5px 12px}
+.invoice.dense .tot td,.invoice.dense .tot tr:last-child td{height:46px}
+.invoice.dense .inv-spacer{min-height:14px}
+.invoice.xdense .items{margin-top:18px}
+.invoice.xdense .items th{padding:9px 12px;font-size:14px}
+.invoice.xdense .items td{height:34px;padding:3px 10px;font-size:13px}
+.invoice.xdense .items td small{display:none}
+.invoice.xdense .tot td,.invoice.xdense .tot tr:last-child td{height:36px}
+.invoice.xdense .inv-two{margin-top:16px}
+.invoice.xdense .inv-spacer{min-height:10px}
+.invoice.xdense .thanks{padding-top:16px;padding-bottom:18px}
 
 @media(max-width:1000px){.app{grid-template-columns:1fr;padding:14px}}
-@media(max-width:560px){.roomrow{grid-template-columns:1fr 1fr}.roomrow .btn-del{grid-column:1/-1}.svcrow{grid-template-columns:1fr 1fr}.svcrow>div:first-child{grid-column:1/-1}.topbar span{display:none}}
+@media(max-width:700px){.roomrow{grid-template-columns:1fr 1fr}.roomrow>div:first-child{grid-column:1/-1}.svcrow{grid-template-columns:1fr 1fr}.svcrow>div:first-child{grid-column:1/-1}}
+@media(max-width:560px){.topbar span{display:none}.panel{padding:16px}input,select{font-size:16px}}
 @media print{
-  body{background:#fff}
+  html,body{background:#fff;margin:0;padding:0;width:210mm}
   #login,.topbar,.panel{display:none!important}
-  .app{display:block;padding:0;max-width:none}
-  .stage{height:auto!important;overflow:visible}
-  .invoice{transform:none!important;box-shadow:none;width:100%;min-height:100vh}
+  .app{display:block;padding:0;margin:0;max-width:none;width:210mm}
+  .stage{width:210mm!important;height:296mm!important;overflow:hidden!important}
+  .invoice{transform:none!important;box-shadow:none;width:210mm!important;height:296mm!important;min-height:0!important;overflow:hidden;break-inside:avoid;page-break-inside:avoid;page-break-after:avoid}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   @page{size:A4;margin:0}
 }
@@ -104,7 +118,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outl
   <form class="login-card" id="loginForm" autocomplete="off">
     <img src="logo.jpeg" alt="Hello Airport Hotel">
     <h1>Hello Airport Hotel</h1>
-    <p>Enter the Username and Password</p>
+    <p>Staff sign in to create invoices</p>
     <input id="u" placeholder="Username" autocapitalize="none" required>
     <input id="p" type="password" placeholder="Password" required>
     <div class="err" id="err"></div>
@@ -189,7 +203,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outl
 <script>
 /* ====== EDIT YOUR LOGIN HERE ====== */
 const AUTH_USER = "admin";
-const AUTH_PASS = "salome";
+const AUTH_PASS = "hello2026";
 /* ================================== */
 
 const $ = id => document.getElementById(id);
@@ -215,7 +229,7 @@ function logout(){ sess.del("hah_auth"); $("p").value=""; $("appWrap").classList
 /* ---------- Data ---------- */
 const ROOM_TYPES = ["Single Room","Double Room","Family Room"];
 const BASIS = {RO:"RO – Room Only", BB:"BB – Bed & Breakfast", HB:"HB – Half Board", FB:"FB – Full Board"};
-const SERVICES = ["Breakfast","Lunch","Dinner","Transport","Laundry", "Tea/Coffee" , "Water Bottles"];
+const SERVICES = ["Breakfast","Lunch","Dinner","Transport","Laundry","Tea / Coffee","Water Bottles"];
 let rooms = [{type:"Single Room",qty:1,basis:"RO",rate:""}];
 let services = {};
 
@@ -260,7 +274,7 @@ function update(){
   const type = document.querySelector("input[name=type]:checked").value;
   document.querySelectorAll("#typeToggle label").forEach(l=>l.classList.toggle("on",l.querySelector("input").checked));
   $("docTitle").textContent = type==="PRO" ? "PERFORMA INVOICE" : "RESERVATION INVOICE";
-  $("pNo").textContent = $("invNo").value.trim();
+  $("pNo").textContent = "#" + $("invNo").value.trim();
   $("pDate").textContent = fmtDate(iso(new Date()));
   $("pCin").textContent = fmtDate($("cin").value);
   $("pCout").textContent = fmtDate($("cout").value);
@@ -282,6 +296,8 @@ function update(){
   $("items").innerHTML = html;
   $("sub").textContent = money(total);
   $("grand").textContent = money(total);
+  $("invoice").classList.toggle("dense", count>=5 && count<7);
+  $("invoice").classList.toggle("xdense", count>=7);
   fit();
 }
 
