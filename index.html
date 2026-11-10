@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hello Airport Hotel – Invoices</title>
+<link rel="icon" href="logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#03a4b1;--teal-d:#027c86;--teal-l:#e3f5f6;--slate:#2f4553;--band:#f5f4f2;--bg:#eef3f4;--line:#b9bec1;--muted:#6a7a84}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost','Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--slate)}
+.hidden{display:none!important}
+
+/* ---------- Login ---------- */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:linear-gradient(160deg,var(--slate) 0%,var(--teal-d) 100%)}
+.login-card{background:#fff;border-radius:14px;padding:34px 30px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.login-card img{width:96px;height:96px;border-radius:14px;margin-bottom:14px}
+.login-card h1{font-size:22px;font-weight:500;letter-spacing:.04em}
+.login-card p{font-size:13px;color:var(--muted);margin:4px 0 20px}
+.login-card input{margin-bottom:12px}
+.err{color:#b3261e;font-size:13px;min-height:18px;margin-bottom:6px}
+
+/* ---------- Controls ---------- */
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;font-weight:500}
+input,select{width:100%;padding:10px 11px;border:1px solid #cbd5d9;border-radius:8px;font:inherit;font-size:14px;background:#fff;color:var(--slate)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-color:transparent}
+.btn{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font:inherit;font-weight:500;font-size:14px}
+.btn-primary{background:var(--teal);color:#fff;width:100%}
+.btn-primary:hover{background:var(--teal-d)}
+.btn-soft{background:var(--teal-l);color:var(--teal-d);margin-top:4px}
+.btn-del{background:#fbe9e7;color:#b3261e;padding:10px 12px}
+
+/* ---------- App shell ---------- */
+.topbar{background:var(--slate);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 22px;border-bottom:4px solid var(--teal)}
+.topbar img{width:38px;height:38px;border-radius:8px}
+.topbar b{font-weight:500;font-size:17px;letter-spacing:.04em}
+.topbar span{opacity:.7;font-size:13px}
+.topbar button{margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;padding:7px 14px;border-radius:7px;cursor:pointer;font:inherit;font-size:13px}
+.app{display:grid;grid-template-columns:400px 1fr;gap:22px;padding:22px;max-width:1360px;margin:auto;align-items:start}
+.panel{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 14px rgba(47,69,83,.1);border-top:4px solid var(--teal)}
+.panel h3{margin:20px 0 9px;font-size:13px;font-weight:600;color:var(--teal-d);letter-spacing:.08em;text-transform:uppercase}
+.panel h3:first-child{margin-top:0}
+.row{display:grid;gap:8px;margin-bottom:9px}
+.two{grid-template-columns:1fr 1fr}
+.roomrow{grid-template-columns:1.5fr .6fr 1.2fr 1fr auto;align-items:end;background:#f6fafb;padding:9px;border-radius:8px}
+.svcrow{grid-template-columns:1.3fr .7fr 1fr;align-items:end;background:#f6fafb;padding:9px;border-radius:8px}
+.toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toggle label{margin:0;text-align:center;padding:10px;border:1.5px solid #cbd5d9;border-radius:8px;cursor:pointer;font-size:14px;color:var(--slate);font-weight:500}
+.toggle input{display:none}
+.toggle label.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:7px 14px;border:1.5px solid #cbd5d9;border-radius:20px;cursor:pointer;font-size:13px;user-select:none;background:#fff}
+.chip.on{background:var(--teal-l);border-color:var(--teal);color:var(--teal-d);font-weight:500}
+.btn-print{margin-top:22px;padding:14px;font-size:15px}
+
+/* ---------- Invoice (A4: 794px) ---------- */
+.stage{width:100%;overflow:hidden}
+.invoice{--brand:#1fabc2;--accent:#ff8a47;width:794px;min-height:1123px;background:#fff;position:relative;display:flex;flex-direction:column;
+  transform-origin:top left;box-shadow:0 4px 24px rgba(47,69,83,.18);padding:0 78px;color:#111;font-family:'Poppins','Segoe UI',Tahoma,sans-serif}
+.inv-head{position:relative;height:222px;flex:none}
+.inv-head h1{position:absolute;left:0;top:60px;font-size:35px;font-weight:700;color:var(--brand);white-space:nowrap}
+.inv-bar{position:absolute;left:0;right:120px;top:156px;height:32px;background:var(--brand)}
+.inv-logo{position:absolute;right:-29px;top:41px;width:176px;height:176px;object-fit:cover;border:4px solid var(--brand);background:#fff;z-index:2}
+.inv-ref{font-size:16px;line-height:1.75;margin-top:2px}
+.inv-two{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:30px}
+.inv-two h5{font-size:14.5px;font-weight:600;margin-bottom:10px}
+.inv-two p{font-size:16px;line-height:1.6;min-height:26px}
+.items{width:100%;border-collapse:collapse;margin-top:38px;table-layout:fixed}
+.items th{background:var(--brand);color:#fff;font-weight:600;font-size:15px;padding:19px 14px;text-align:left;border:1px solid #fff;border-left-color:#000;border-top-color:#000}
+.items th:last-child{border-right-color:#000}
+.items td{border:1px solid #000;height:62px;padding:8px 12px;font-size:14.5px;vertical-align:middle}
+.items td small{display:block;font-size:11.5px;color:#555;margin-top:2px}
+.items .r{text-align:right}.items .c{text-align:center}
+.tot{width:290px;margin:16px 0 0 auto;border-collapse:collapse}
+.tot td{border:1px solid #000;height:62px;padding:8px 14px;font-size:14.5px}
+.tot td:last-child{text-align:right;width:52%}
+.tot tr:last-child td{font-weight:700;height:64px}
+.inv-spacer{flex:1;min-height:36px}
+.thanks{margin:0 -78px;padding:26px 78px 30px;text-align:center;border-top:4px solid var(--brand)}
+.thanks h4{font-weight:700;font-size:18px;letter-spacing:.03em;color:var(--brand)}
+.thanks p{font-weight:600;font-size:14.5px;margin-top:16px;color:var(--accent)}
+
+@media(max-width:1000px){.app{grid-template-columns:1fr;padding:14px}}
+@media(max-width:560px){.roomrow{grid-template-columns:1fr 1fr}.roomrow .btn-del{grid-column:1/-1}.svcrow{grid-template-columns:1fr 1fr}.svcrow>div:first-child{grid-column:1/-1}.topbar span{display:none}}
+@media print{
+  body{background:#fff}
+  #login,.topbar,.panel{display:none!important}
+  .app{display:block;padding:0;max-width:none}
+  .stage{height:auto!important;overflow:visible}
+  .invoice{transform:none!important;box-shadow:none;width:100%;min-height:100vh}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login">
+  <form class="login-card" id="loginForm" autocomplete="off">
+    <img src="logo.jpeg" alt="Hello Airport Hotel">
+    <h1>Hello Airport Hotel</h1>
+    <p>Staff sign in to create invoices</p>
+    <input id="u" placeholder="Username" autocapitalize="none" required>
+    <input id="p" type="password" placeholder="Password" required>
+    <div class="err" id="err"></div>
+    <button class="btn btn-primary" type="submit">Sign in</button>
+  </form>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="appWrap" class="hidden">
+  <div class="topbar">
+    <img src="logo.jpeg" alt="">
+    <b>Hello Airport Hotel</b><span>Invoice generator</span>
+    <button onclick="logout()">Sign out</button>
+  </div>
+
+  <div class="app">
+    <div class="panel">
+      <h3>Invoice type</h3>
+      <div class="toggle" id="typeToggle">
+        <label class="on"><input type="radio" name="type" value="PRO" checked>Proforma</label>
+        <label><input type="radio" name="type" value="RES">Reservation</label>
+      </div>
+
+      <h3>Guest and stay</h3>
+      <div class="row"><div><label>Guest name</label><input id="guest" placeholder="e.g. Mr. Kamal Perera"></div></div>
+      <div class="row two">
+        <div><label>Invoice no. (automatic)</label><input id="invNo" readonly></div>
+        <div><label>Invoice date (automatic)</label><input id="invDate" disabled></div>
+      </div>
+      <div class="row two">
+        <div><label>Check-in</label><input type="date" id="cin"></div>
+        <div><label>Check-out</label><input type="date" id="cout"></div>
+      </div>
+
+      <h3>Rooms</h3>
+      <div id="rooms"></div>
+      <button class="btn btn-soft" onclick="addRoom()">+ Add room</button>
+
+      <h3>Extra services</h3>
+      <div class="chips" id="chips"></div>
+      <div id="svcInputs" style="margin-top:10px"></div>
+
+      <button class="btn btn-primary btn-print" onclick="printInvoice()">Print / Save as PDF</button>
+      <button class="btn btn-soft" style="width:100%;margin-top:10px" onclick="newInvoice()">New invoice (clear form)</button>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="invoice" id="invoice">
+        <div class="inv-head">
+          <h1 id="docTitle">PERFORMA INVOICE</h1>
+          <div class="inv-bar"></div>
+          <img class="inv-logo" src="logo.jpeg" alt="Hello Airport Hotel Katunayake">
+        </div>
+        <div class="inv-ref">
+          <div>Invoice Number: <span id="pNo"></span></div>
+          <div>Invoice Date: <span id="pDate"></span></div>
+          <div>Check-in: <span id="pCin"></span> &nbsp;|&nbsp; Check-out: <span id="pCout"></span></div>
+        </div>
+        <div class="inv-two">
+          <div><h5>HELLO AIRPORT HOTEL</h5><p>628 Colombo Road,<br>Katunayake,<br>Sri Lanka<br>+94 77 119 9377</p></div>
+          <div><h5>BILL TO</h5><p id="pGuest"></p></div>
+        </div>
+        <table class="items">
+          <colgroup><col style="width:42%"><col style="width:24%"><col style="width:10%"><col style="width:24%"></colgroup>
+          <thead><tr><th>Description</th><th class="r">Unit Price</th><th class="c">Qty</th><th class="r">Amount</th></tr></thead>
+          <tbody id="items"></tbody>
+        </table>
+        <table class="tot">
+          <tr><td>Sub-Total</td><td id="sub">Rs.0.00</td></tr>
+          <tr><td>Total</td><td id="grand">Rs.0.00</td></tr>
+        </table>
+        <div class="inv-spacer"></div>
+        <div class="thanks">
+          <h4>Thank you for choosing Hello Airport Hotel Katunayake</h4>
+          <p>We wish you a pleasant stay and look forward to welcoming you again.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====== EDIT YOUR LOGIN HERE ====== */
+const AUTH_USER = "admin";
+const AUTH_PASS = "salome";
+/* ================================== */
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+};
+const sess = {
+  get(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} },
+  del(k){ try{ sessionStorage.removeItem(k); }catch(e){} }
+};
+
+/* ---------- Login ---------- */
+function showApp(){ $("login").classList.add("hidden"); $("appWrap").classList.remove("hidden"); fit(); }
+$("loginForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if($("u").value.trim()===AUTH_USER && $("p").value===AUTH_PASS){ sess.set("hah_auth","1"); $("err").textContent=""; showApp(); }
+  else $("err").textContent = "Incorrect username or password.";
+});
+function logout(){ sess.del("hah_auth"); $("p").value=""; $("appWrap").classList.add("hidden"); $("login").classList.remove("hidden"); }
+
+/* ---------- Data ---------- */
+const ROOM_TYPES = ["Single Room","Double Room","Family Room"];
+const BASIS = {RO:"RO – Room Only", BB:"BB – Bed & Breakfast", HB:"HB – Half Board", FB:"FB – Full Board"};
+const SERVICES = ["Breakfast","Lunch","Dinner","Transport","Laundry", "Tea/Coffee" , "Water Bottles"];
+let rooms = [{type:"Single Room",qty:1,basis:"RO",rate:""}];
+let services = {};
+
+const money = n => "Rs." + Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const iso = d => d.toLocaleDateString("en-CA");
+const fmtDate = s => { if(!s) return ""; const [y,m,d]=s.split("-"); return `${d}/${m}/${y}`; };
+function nights(){
+  const a=$("cin").value, b=$("cout").value; if(!a||!b) return 0;
+  const p=s=>Date.UTC(...s.split("-").map((v,i)=>i===1?v-1:+v));
+  const n=Math.round((p(b)-p(a))/864e5); return n>0?n:0;
+}
+
+/* ---------- Form rendering ---------- */
+function renderRooms(){
+  $("rooms").innerHTML = rooms.map((r,i)=>`
+    <div class="row roomrow">
+      <div><label>Description</label><select onchange="rooms[${i}].type=this.value;update()">
+        ${ROOM_TYPES.map(t=>`<option ${t===r.type?"selected":""}>${t}</option>`).join("")}</select></div>
+      <div><label>Qty</label><input type="number" min="1" value="${r.qty}" oninput="rooms[${i}].qty=+this.value;update()"></div>
+      <div><label>Basis</label><select onchange="rooms[${i}].basis=this.value;update()">
+        ${Object.entries(BASIS).map(([k,v])=>`<option value="${k}" ${k===r.basis?"selected":""}>${v}</option>`).join("")}</select></div>
+      <div><label>Rate / night</label><input type="number" min="0" value="${r.rate}" oninput="rooms[${i}].rate=+this.value;update()"></div>
+      <button class="btn btn-del" aria-label="Remove room" onclick="rooms.splice(${i},1);renderRooms();update()">✕</button>
+    </div>`).join("");
+}
+function addRoom(){ rooms.push({type:"Single Room",qty:1,basis:"RO",rate:""}); renderRooms(); update(); }
+function renderChips(){
+  $("chips").innerHTML = SERVICES.map(s=>`<span class="chip ${services[s]?"on":""}" onclick="toggleSvc('${s}')">${services[s]?"✓ ":""}${s}</span>`).join("");
+}
+function toggleSvc(s){ if(services[s]) delete services[s]; else services[s]={qty:1,price:""}; renderChips(); renderSvcInputs(); update(); }
+function renderSvcInputs(){
+  $("svcInputs").innerHTML = Object.keys(services).map(s=>`
+    <div class="row svcrow">
+      <div><label>Service</label><input value="${s}" disabled></div>
+      <div><label>Qty</label><input type="number" min="1" value="${services[s].qty}" oninput="services['${s}'].qty=+this.value;update()"></div>
+      <div><label>Price (each)</label><input type="number" min="0" value="${services[s].price}" oninput="services['${s}'].price=+this.value;update()"></div>
+    </div>`).join("");
+}
+
+/* ---------- Invoice preview ---------- */
+function update(){
+  const type = document.querySelector("input[name=type]:checked").value;
+  document.querySelectorAll("#typeToggle label").forEach(l=>l.classList.toggle("on",l.querySelector("input").checked));
+  $("docTitle").textContent = type==="PRO" ? "PERFORMA INVOICE" : "RESERVATION INVOICE";
+  $("pNo").textContent = $("invNo").value.trim();
+  $("pDate").textContent = fmtDate(iso(new Date()));
+  $("pCin").textContent = fmtDate($("cin").value);
+  $("pCout").textContent = fmtDate($("cout").value);
+  $("pGuest").textContent = $("guest").value;
+
+  const n = nights();
+  let html="", total=0, count=0;
+  rooms.forEach(r=>{
+    if(!r.rate) return;
+    const amt=(r.qty||0)*r.rate*n; total+=amt; count++;
+    html+=`<tr><td>${r.type} (${r.basis})<small>${n} night${n===1?"":"s"}</small></td><td class="r">${money(r.rate)}</td><td class="c">${r.qty||0}</td><td class="r">${money(amt)}</td></tr>`;
+  });
+  Object.keys(services).forEach(s=>{
+    const v=services[s]; if(!v.price) return;
+    const amt=(v.qty||0)*v.price; total+=amt; count++;
+    html+=`<tr><td>${s}</td><td class="r">${money(v.price)}</td><td class="c">${v.qty||0}</td><td class="r">${money(amt)}</td></tr>`;
+  });
+  for(let i=count;i<4;i++) html+=`<tr><td></td><td></td><td></td><td></td></tr>`;
+  $("items").innerHTML = html;
+  $("sub").textContent = money(total);
+  $("grand").textContent = money(total);
+  fit();
+}
+
+/* Scale the A4 invoice to fit narrow screens (phones) */
+function fit(){
+  const st=$("stage"), inv=$("invoice");
+  const s=Math.min(1, st.clientWidth/794);
+  inv.style.transform = s<1 ? `scale(${s})` : "none";
+  st.style.height = (inv.offsetHeight*s)+"px";
+}
+window.addEventListener("resize", fit);
+
+/* ---------- Invoice number (timestamp digits) and printing ---------- */
+const pad = n => String(n).padStart(2,"0");
+function genNo(){
+  const d=new Date();
+  return ""+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds());
+}
+function setNo(){ $("invNo").value=genNo(); update(); }
+let pending=false;
+function afterPrinted(){ if(!pending) return; pending=false; setNo(); }   /* fresh number for the next invoice */
+window.addEventListener("afterprint", afterPrinted);
+function printInvoice(){
+  setNo(); pending=true; window.print();                                  /* number = time of printing */
+  setTimeout(afterPrinted, 1500);                                         /* fallback if afterprint is skipped */
+}
+function newInvoice(){
+  $("guest").value=""; rooms=[{type:"Single Room",qty:1,basis:"RO",rate:""}]; services={};
+  $("cin").value=iso(new Date()); $("cout").value=iso(new Date(Date.now()+864e5));
+  renderRooms(); renderChips(); renderSvcInputs(); setNo();
+}
+
+/* ---------- Init ---------- */
+document.querySelectorAll("input[name=type]").forEach(r=>r.addEventListener("change",update));
+["guest","cin","cout"].forEach(id=>$(id).addEventListener("input",update));
+$("invDate").value = fmtDate(iso(new Date()));
+$("cin").value = iso(new Date());
+$("cout").value = iso(new Date(Date.now()+864e5));
+$("invNo").value = genNo();
+renderRooms(); renderChips(); update();
+if(sess.get("hah_auth")==="1") showApp();
+</script>
+</body>
+</html>
